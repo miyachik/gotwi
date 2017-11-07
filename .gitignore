@@ -195,3 +195,6 @@ dump.rdb
 
 # Ignore /public/assets/
 /public/assets/
+
+# Ignore debug file
+/debug
