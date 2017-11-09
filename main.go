@@ -2,31 +2,43 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
-	"os"
 
-	"github.com/coreos/pkg/flagutil"
+	"github.com/BurntSushi/toml"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 )
 
-func main() {
-	flags := flag.NewFlagSet("user-auth", flag.ExitOnError)
-	consumerKey := flags.String("consumer-key", "", "Twitter Consumer Key")
-	consumerSecret := flags.String("consumer-secret", "", "Twitter Consumer Secret")
-	accessToken := flags.String("access-token", "", "Twitter Access Token")
-	accessSecret := flags.String("access-secret", "", "Twitter Access Secret")
-	flags.Parse(os.Args[1:])
-	flagutil.SetFlagsFromEnv(flags, "TWITTER")
+// For User Authentication
+type Config struct {
+	ConsumerKey    string
+	ConsumerSecret string
+	AccessToken    string
+	AccessSecret   string
+}
 
-	if *consumerKey == "" || *consumerSecret == "" || *accessToken == "" || *accessSecret == "" {
+var config Config
+
+func main() {
+	data, err := Asset("settings.local.toml")
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = toml.Decode(string(data), &config)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if config.ConsumerKey == "" || config.ConsumerSecret == "" || config.AccessToken == "" || config.AccessSecret == "" {
 		log.Fatal("Consumer key/secret and Access token/secret required")
 	}
 
-	config := oauth1.NewConfig(*consumerKey, *consumerSecret)
-	token := oauth1.NewToken(*accessToken, *accessSecret)
+	oauthConfig := oauth1.NewConfig(config.ConsumerKey, config.ConsumerSecret)
+	token := oauth1.NewToken(config.AccessToken, config.AccessSecret)
 	// OAuth1 http.Client will automatically authorize Requests
-	httpClient := config.Client(oauth1.NoContext, token)
+	httpClient := oauthConfig.Client(oauth1.NoContext, token)
 
 	// Twitter client
 	client := twitter.NewClient(httpClient)

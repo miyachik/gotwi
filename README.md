@@ -1,14 +1,8 @@
 ## Edit your environment
-
-```
-export TWITTER_CONSUMER_KEY=<YOUR TWITTER_CONSUMER_KEY>
-export TWITTER_CONSUMER_SECRET=<YOUR TWITTER_CONSUMER_SECRET>
-export TWITTER_ACCESS_TOKEN=<YOUR TWITTER_ACCESS_TOKEN>
-export TWITTER_ACCESS_SECRET=<YOUR TWITTER_ACCESS_SECRET>
-```
+% cp settings.sample.toml settings.local.toml
+% emacs settings.local.toml
 
 ## build
 ```
-% go build -o gotwi
-% mv gotwi $GOPATH/bin
+% make install 
 ```
