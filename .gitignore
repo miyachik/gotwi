@@ -200,7 +200,10 @@ dump.rdb
 /debug
 
 # Ignore local file
-/settings.local.toml
+settings.toml
 
 # Ignore bindata
 /bindata.go
+
+# Ignore bindata
+/statik

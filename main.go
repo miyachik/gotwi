@@ -3,14 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"regexp"
+	"strings"
 
+	_ "./statik"
 	"github.com/BurntSushi/toml"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
+	"github.com/rakyll/statik/fs"
 )
 
-// For User Authentication
+// Config For User Authentication
 type Config struct {
 	ConsumerKey    string
 	ConsumerSecret string
@@ -19,14 +24,23 @@ type Config struct {
 }
 
 var config Config
+var regxNewline = regexp.MustCompile(`\r\n|\r|\n`)
 
 func main() {
-	data, err := Asset("settings.local.toml")
+	fsStatik, _ := fs.New()
+	f, err := fsStatik.Open("/settings.toml")
+	defer f.Close()
+
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
-	_, err = toml.Decode(string(data), &config)
+	buf, err := ioutil.ReadAll(f)
+	if err != nil {
+		fmt.Println(err)
+	}
+	tokens := strings.TrimSpace(string(buf))
+	_, err = toml.Decode(tokens, &config)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -1,3 +1,3 @@
 install:
-	go-bindata settings.local.toml
+	statik -src=config
 	go install
