@@ -1,3 +1,3 @@
 install:
 	statik -src=config
-	go install
+	go build main.go
